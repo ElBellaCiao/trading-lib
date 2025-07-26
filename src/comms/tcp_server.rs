@@ -6,7 +6,7 @@ use std::net::{SocketAddr, TcpListener, TcpStream};
 pub struct TcpServer<T: Pod> {
     pub listener: TcpListener,
     stream: BufReader<TcpStream>,
-    buffer: [T; 1],
+    buffer: T,
 }
 
 impl<T: Pod> TcpServer<T> {
@@ -20,14 +20,14 @@ impl<T: Pod> TcpServer<T> {
         Ok(Self {
             listener,
             stream: BufReader::new(stream),
-            buffer: [T::zeroed(); 1],
+            buffer: T::zeroed(),
         })
     }
 
     #[inline(always)]
     pub fn receive(&mut self) -> Result<T> {
-        let bytes = bytemuck::bytes_of_mut(&mut self.buffer[0]);
+        let bytes = bytemuck::bytes_of_mut(&mut self.buffer);
         self.stream.read_exact(bytes)?;
-        Ok(self.buffer[0])
+        Ok(self.buffer)
     }
 }
