@@ -1,5 +1,3 @@
-mod model;
-pub use model::*;
-
-mod comms;
-pub use comms::*;
+pub mod comms;
+pub mod model;
+pub use manager_service_discovery_client;
