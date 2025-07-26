@@ -23,10 +23,10 @@ impl<const MAX_IPS: usize, const MAX_IPS_PER_INSTRUMENT: usize>
     }
 
     #[inline(always)]
-    pub fn send<T: Pod>(&mut self, instrument_id: InstrumentId, data: &T) -> Result<()> {
+    pub fn send<T: Pod>(&mut self, instrument_id: &InstrumentId, data: &T) -> Result<()> {
         let ips = self
             .instrument_to_ips
-            .get_mut(&instrument_id)
+            .get_mut(instrument_id)
             .ok_or_else(|| anyhow!("Instrument {} not found", instrument_id))?;
 
         let bytes = bytemuck::bytes_of(data);
