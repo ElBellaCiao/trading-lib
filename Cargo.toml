@@ -7,11 +7,11 @@ edition = "2024"
 # == Core runtime ==
 anyhow = "1"
 
-# == Utility ==
-bincode = { version = "2", features = ["std", "derive"] }
-
 # == Queues ==
 heapless = { version = "0", features = ["serde"] }
+
+# == utility ==
+bytemuck =  { version = "1", features = ["derive"] }
 
 # === Custom Libraries ===
 manager-service-discovery-client = {git = "https://github.com/ElBellaCiao/manager-service-discovery.git", rev = "2ca25fe5534068f57723fa85dec4aa6f85122e81" }
