@@ -22,7 +22,7 @@ pub struct TickData {
     pub size: Size,
     pub instrument_id: InstrumentId,
     pub side: Side,
-    _padding: [u8; 3],
+    pub _padding: [u8; 3],
 }
 
 pub const TICK_DATA_SIZE: usize = size_of::<TickData>();
