@@ -24,6 +24,7 @@ impl<const BUFFER_SIZE: usize> TcpServer<BUFFER_SIZE> {
         })
     }
 
+    #[inline(always)]
     pub fn receive<T: Pod>(&mut self) -> Result<T> {
         const { assert!(size_of::<T>() == BUFFER_SIZE) };
 
