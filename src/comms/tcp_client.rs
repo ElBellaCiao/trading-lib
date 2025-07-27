@@ -7,6 +7,7 @@ use std::collections::HashMap;
 use std::io::Write;
 use std::net::IpAddr;
 use std::net::TcpStream;
+use std::time::Duration;
 
 pub struct TcpClient<const MAX_IPS: usize, const MAX_IPS_PER_INSTRUMENT: usize> {
     instrument_to_ips:
@@ -57,8 +58,9 @@ impl<const MAX_IPS: usize, const MAX_IPS_PER_INSTRUMENT: usize>
 
             let mut ip_list = heapless::Vec::new();
             for ip in ips {
-                let stream = TcpStream::connect((ip, port))
-                    .map_err(|e| anyhow::anyhow!("Failed to connect to {}: {}", ip, e))?;
+                let stream =
+                    TcpStream::connect_timeout(&(ip, port).into(), Duration::from_secs(20))
+                        .map_err(|e| anyhow::anyhow!("Failed to connect to {}: {}", ip, e))?;
                 stream.set_nodelay(true)?;
                 stream.set_nonblocking(false)?;
 
