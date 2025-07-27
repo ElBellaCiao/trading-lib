@@ -17,6 +17,8 @@ impl<const MAX_IPS: usize, const MAX_IPS_PER_INSTRUMENT: usize>
     TcpClient<MAX_IPS, MAX_IPS_PER_INSTRUMENT>
 {
     pub fn new(address_book: AddressBook, socket: u16) -> Result<Self> {
+        Self::validate_address_book(&address_book.instrument_to_ips)?;
+
         Ok(TcpClient {
             instrument_to_ips: Self::create_fixed_map(address_book.instrument_to_ips, socket)?,
         })
@@ -32,11 +34,15 @@ impl<const MAX_IPS: usize, const MAX_IPS_PER_INSTRUMENT: usize>
         connection_pool.send_to_all(data)
     }
 
-    fn create_fixed_map(
-        address_book: HashMap<InstrumentId, Vec<IpAddr>>,
-        port: u16,
-    ) -> Result<FnvIndexMap<InstrumentId, TcpConnectionPool<MAX_IPS_PER_INSTRUMENT>, MAX_IPS>> {
-        let mut fixed_map = FnvIndexMap::new();
+    fn validate_address_book(address_book: &HashMap<InstrumentId, Vec<IpAddr>>) -> Result<()> {
+        if address_book.len() > MAX_IPS {
+            bail!(
+                "Too many instruments: {} exceeds maximum of {}",
+                address_book.len(),
+                MAX_IPS
+            );
+        }
+
         for (instrument_id, ips) in address_book {
             if ips.len() > MAX_IPS_PER_INSTRUMENT {
                 bail!(
@@ -46,7 +52,17 @@ impl<const MAX_IPS: usize, const MAX_IPS_PER_INSTRUMENT: usize>
                     MAX_IPS_PER_INSTRUMENT
                 );
             }
+        }
 
+        Ok(())
+    }
+
+    fn create_fixed_map(
+        address_book: HashMap<InstrumentId, Vec<IpAddr>>,
+        port: u16,
+    ) -> Result<FnvIndexMap<InstrumentId, TcpConnectionPool<MAX_IPS_PER_INSTRUMENT>, MAX_IPS>> {
+        let mut fixed_map = FnvIndexMap::new();
+        for (instrument_id, ips) in address_book {
             let mut connection_pool = TcpConnectionPool::new();
             for ip in ips {
                 connection_pool.connect_and_add(ip, port)?;
