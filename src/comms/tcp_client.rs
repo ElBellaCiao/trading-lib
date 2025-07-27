@@ -3,7 +3,7 @@ use anyhow::{Result, anyhow, bail};
 use bytemuck::Pod;
 use heapless::FnvIndexMap;
 use manager_service_discovery_client::AddressBook;
-use retry::{delay::Fixed, retry};
+use retry::{delay::Exponential, retry};
 use std::collections::HashMap;
 use std::io::Write;
 use std::net::IpAddr;
@@ -82,8 +82,8 @@ pub struct TcpConnectionPool<const MAX_CONNECTIONS: usize> {
 }
 
 impl<const MAX_CONNECTIONS: usize> TcpConnectionPool<MAX_CONNECTIONS> {
-    const RETRY_DELAY_MS: u64 = 5000;
-    const RETRY_ATTEMPTS: usize = 60;
+    const INITIAL_DELAY_MS: u64 = 100;
+    const MAX_RETRY_ATTEMPTS: usize = 12;
 
     fn new() -> Self {
         Self {
@@ -93,13 +93,13 @@ impl<const MAX_CONNECTIONS: usize> TcpConnectionPool<MAX_CONNECTIONS> {
 
     fn connect_and_add(&mut self, ip: IpAddr, port: u16) -> Result<()> {
         let stream = retry(
-            Fixed::from_millis(Self::RETRY_DELAY_MS).take(Self::RETRY_ATTEMPTS),
+            Exponential::from_millis(Self::INITIAL_DELAY_MS).take(Self::MAX_RETRY_ATTEMPTS),
             || TcpStream::connect((ip, port)),
         )
         .map_err(|e| {
             anyhow!(
                 "Failed to connect to {ip}:{port} after retrying for {} ms: {e:?}",
-                Self::RETRY_DELAY_MS * Self::RETRY_ATTEMPTS as u64
+                Self::INITIAL_DELAY_MS * Self::MAX_RETRY_ATTEMPTS as u64
             )
         })?;
 
