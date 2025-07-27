@@ -10,8 +10,8 @@ pub struct TcpServer<T: Pod> {
 }
 
 impl<T: Pod> TcpServer<T> {
-    pub fn new(socket_addr: SocketAddr) -> Result<Self> {
-        let listener = TcpListener::bind(socket_addr)?;
+    pub fn new(socket_addr: impl Into<SocketAddr>) -> Result<Self> {
+        let listener = TcpListener::bind(socket_addr.into())?;
         let (stream, _addr) = listener.accept()?;
 
         stream.set_nodelay(true)?;
