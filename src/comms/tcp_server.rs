@@ -25,22 +25,15 @@ impl<T: Pod> TcpServer<T> {
     }
 
     #[inline(always)]
-    pub fn next_record(&mut self) -> Option<Result<T>> {
+    pub fn next_record(&mut self) -> Result<Option<T>> {
         let bytes = bytemuck::bytes_of_mut(&mut self.buffer);
         match self.stream.read_exact(bytes) {
-            Ok(()) => Some(Ok(self.buffer)),
+            Ok(()) => Ok(Some(self.buffer)),
             Err(e) => match e.kind() {
-                ErrorKind::UnexpectedEof => None,
-                _ => Some(Err(e.into())),
+                // Connection closed successfully
+                ErrorKind::UnexpectedEof => Ok(None),
+                _ => Err(e.into()),
             },
         }
-    }
-}
-
-impl<T: Pod + Copy> Iterator for TcpServer<T> {
-    type Item = Result<T>;
-
-    fn next(&mut self) -> Option<Self::Item> {
-        self.next_record()
     }
 }
