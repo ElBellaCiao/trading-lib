@@ -3,6 +3,7 @@ use anyhow::{Result, anyhow, bail};
 use bytemuck::Pod;
 use heapless::FnvIndexMap;
 use manager_service_discovery_client::AddressBook;
+use retry::{delay::Fixed, retry};
 use std::collections::HashMap;
 use std::io::Write;
 use std::net::IpAddr;
@@ -70,7 +71,7 @@ impl<const MAX_IPS: usize, const MAX_IPS_PER_INSTRUMENT: usize>
 
             fixed_map
                 .insert(instrument_id, connection_pool)
-                .map_err(|_| anyhow::anyhow!("Too many instruments: maximum is {}", MAX_IPS))?;
+                .map_err(|_| anyhow!("Too many instruments: maximum is {}", MAX_IPS))?;
         }
         Ok(fixed_map)
     }
@@ -81,6 +82,9 @@ pub struct TcpConnectionPool<const MAX_CONNECTIONS: usize> {
 }
 
 impl<const MAX_CONNECTIONS: usize> TcpConnectionPool<MAX_CONNECTIONS> {
+    const RETRY_DELAY_MS: u64 = 5000;
+    const RETRY_ATTEMPTS: usize = 60;
+
     fn new() -> Self {
         Self {
             streams: heapless::Vec::new(),
@@ -88,14 +92,25 @@ impl<const MAX_CONNECTIONS: usize> TcpConnectionPool<MAX_CONNECTIONS> {
     }
 
     fn connect_and_add(&mut self, ip: IpAddr, port: u16) -> Result<()> {
-        let stream = TcpStream::connect((ip, port))
-            .map_err(|e| anyhow::anyhow!("Failed to connect to {}: {}", ip, e))?;
+        let stream = retry(
+            Fixed::from_millis(Self::RETRY_DELAY_MS).take(Self::RETRY_ATTEMPTS),
+            || TcpStream::connect((ip, port)),
+        )
+        .map_err(|e| {
+            anyhow!(
+                "Failed to connect to {ip}:{port} after retrying for {} ms: {e:?}",
+                Self::RETRY_DELAY_MS * Self::RETRY_ATTEMPTS as u64
+            )
+        })?;
+
         stream.set_nodelay(true)?;
         stream.set_nonblocking(false)?;
 
         self.streams
             .push(stream)
-            .map_err(|_| anyhow::anyhow!("Too many connections: maximum is {}", MAX_CONNECTIONS))
+            .map_err(|_| anyhow!("Too many connections: maximum is {}", MAX_CONNECTIONS))?;
+
+        Ok(())
     }
 
     #[inline(always)]
