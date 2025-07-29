@@ -10,7 +10,7 @@ impl JoinHandleExt for JoinHandle<Result<()>> {
     fn join_with_error(self, thread_name: &str) -> Result<()> {
         self.join()
             .map_err(|e| anyhow!("{} thread panicked: {:?}", thread_name, e))?
-            .map_err(|e| anyhow!("{} failed: {}", thread_name, e))
+            .map_err(|e| anyhow!("{} failed: {:?}", thread_name, e))
     }
 }
 
