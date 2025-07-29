@@ -7,6 +7,9 @@ edition = "2024"
 # == Core runtime ==
 anyhow = "1"
 
+# == Concurrency ==
+core_affinity = "0"
+
 # == Queues ==
 heapless = { version = "0", features = ["serde"] }
 
