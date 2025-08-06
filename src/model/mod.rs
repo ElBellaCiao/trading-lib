@@ -14,7 +14,7 @@ pub const SIDE_BID: Side = 1;
 pub const SIDE_ASK: Side = 2;
 
 #[repr(C, align(32))]
-#[derive(Debug, Clone, Copy, Pod, Zeroable)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Pod, Zeroable)]
 pub struct TickData {
     pub timestamp: Timestamp,
     pub price: Price,
