@@ -84,7 +84,8 @@ impl FromDatabentoRow for TickData {
             instrument_id: row.instrument_id,
             action: parse_action(&row.action)?,
             side: parse_side(&row.side)?,
-            _padding: [0; 2],
+            order_id: row.order_id,
+            _padding: [0; 26],
         })
     }
 }
