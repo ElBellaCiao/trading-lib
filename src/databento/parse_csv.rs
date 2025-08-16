@@ -2,6 +2,7 @@ use crate::databento::{parse_action, parse_side};
 use crate::model::TickData;
 use anyhow::{Result, anyhow};
 use csv::Reader;
+use databento::dbn::{FlagSet, MboMsg, RecordHeader, rtype};
 use serde::Deserialize;
 use std::fs;
 
@@ -48,6 +49,29 @@ pub fn load_from_databento_csv<T: FromDatabentoRow>(filepath: &str) -> Result<Ve
     }
 
     Ok(messages)
+}
+
+impl FromDatabentoRow for MboMsg {
+    fn from_row(row: &DatabentoMboCsvRow) -> Result<Self> {
+        Ok(MboMsg {
+            hd: RecordHeader::new::<MboMsg>(
+                rtype::MBO,
+                row.publisher_id,
+                row.instrument_id,
+                row.ts_event,
+            ),
+            order_id: row.order_id,
+            price: row.price,
+            size: row.size,
+            flags: FlagSet::from(row.flags),
+            channel_id: row.channel_id,
+            action: parse_action(&row.action)?,
+            side: parse_side(&row.side)?,
+            ts_recv: row.ts_recv,
+            ts_in_delta: row.ts_in_delta,
+            sequence: row.sequence,
+        })
+    }
 }
 
 impl FromDatabentoRow for TickData {
