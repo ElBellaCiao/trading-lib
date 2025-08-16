@@ -2640,6 +2640,7 @@ version = "0.1.0"
 dependencies = [
  "anyhow",
  "bytemuck",
+ "chrono",
  "core_affinity",
  "csv",
  "databento",

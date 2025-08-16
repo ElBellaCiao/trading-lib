@@ -1,4 +1,6 @@
 use bytemuck::{Pod, Zeroable};
+use chrono::{DateTime, Utc};
+use std::fmt;
 
 pub type Timestamp = u64;
 pub type Price = i64;
@@ -40,3 +42,31 @@ pub struct TickData {
 }
 
 pub const TICK_DATA_SIZE: usize = size_of::<TickData>();
+
+impl fmt::Display for TickData {
+    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+        // Convert timestamp to UTC datetime
+        let datetime = DateTime::<Utc>::from_timestamp(self.timestamp as i64, 0)
+            .unwrap_or_else(|| DateTime::<Utc>::from_timestamp(0, 0).unwrap());
+
+        // Convert price from nano-units to actual price
+        let actual_price = self.price as f64 / 1e9;
+
+        // Convert side and action to chars
+        let side_char = self.side as char;
+        let action_char = self.action as char;
+
+        write!(
+            f,
+            "TickData {{ timestamp: {}, price: {:.9}, order_id: {}, sequence: {}, size: {}, instrument_id: {}, side: '{}', action: '{}' }}",
+            datetime.format("%Y-%m-%d %H:%M:%S UTC"),
+            actual_price,
+            self.order_id,
+            self.sequence,
+            self.size,
+            self.instrument_id,
+            side_char,
+            action_char
+        )
+    }
+}
