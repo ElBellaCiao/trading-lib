@@ -5,6 +5,7 @@ use csv::Reader;
 use databento::dbn::{FlagSet, MboMsg, RecordHeader, rtype};
 use serde::Deserialize;
 use std::fs;
+use std::path::Path;
 
 #[derive(Debug, Deserialize)]
 pub struct DatabentoMboCsvRow {
@@ -31,7 +32,7 @@ pub trait FromDatabentoRow {
         Self: Sized;
 }
 
-pub fn load_from_databento_csv<T: FromDatabentoRow>(filepath: &str) -> Result<Vec<T>> {
+pub fn load_from_databento_csv<T: FromDatabentoRow, P: AsRef<Path>>(filepath: P) -> Result<Vec<T>> {
     let content = fs::read_to_string(filepath)?;
     let mut reader = Reader::from_reader(content.as_bytes());
     let mut messages = Vec::new();
