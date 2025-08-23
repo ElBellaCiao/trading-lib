@@ -32,7 +32,7 @@ pub trait FromDatabentoRow {
         Self: Sized;
 }
 
-pub fn load_from_databento_csv<T: FromDatabentoRow, P: AsRef<Path>>(filepath: P) -> Result<Vec<T>> {
+pub fn load_from_databento_csv<T: FromDatabentoRow>(filepath: impl AsRef<Path>) -> Result<Vec<T>> {
     let content = fs::read_to_string(filepath)?;
     let mut reader = Reader::from_reader(content.as_bytes());
     let mut messages = Vec::new();
