@@ -12,9 +12,9 @@ pub type OrderId = u64;
 // bytemuck::Pod does not support enums
 // https://github.com/Lokathor/bytemuck/issues/84
 pub type Side = u8;
-pub const SIDE_NONE: Side = b'N';
-pub const SIDE_ASK: Side = b'A';
-pub const SIDE_BID: Side = b'B';
+pub const SIDE_BID: Side = 1 << 0;
+pub const SIDE_ASK: Side = 1 << 1;
+pub const SIDE_NONE: Side = 1 << 2;
 
 // Action constants
 pub type Action = u8;
