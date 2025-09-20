@@ -1,8 +1,11 @@
-mod databento;
-pub mod model;
-pub mod network;
-mod thread;
+#[cfg(feature = "parse")]
+pub mod parse;
 
-pub use databento::*;
-pub use manager_service_discovery_client;
-pub use thread::*;
+#[cfg(feature = "model")]
+pub mod model;
+
+#[cfg(feature = "network")]
+pub mod network;
+
+#[cfg(feature = "thread")]
+pub mod thread;

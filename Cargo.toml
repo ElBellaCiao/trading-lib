@@ -8,20 +8,20 @@ edition = "2024"
 anyhow = "1"
 
 # == Concurrency ==
-core_affinity = "0"
-
-# == Queues ==
-heapless = { version = "0", features = ["serde"] }
+core_affinity = { version = "0", optional = true }
 
 # == utility ==
-bytemuck =  { version = "1", features = ["derive"] }
-retry = "2"
-chrono = "0"
+bytemuck =  { version = "1", features = ["derive"], optional = true }
+retry = { version = "2", optional = true }
+chrono = { version = "0", optional = true }
 
 # == Databento ==
-databento = { version = "0", features = ["live"] }
-serde = { version = "1", features = ["derive"] }
-csv = "1"
+databento = { version = "0", features = ["live"], optional = true }
+serde = { version = "1", features = ["derive"], optional = true }
+csv = { version = "1", optional = true }
 
-# === Custom Libraries ===
-manager-service-discovery-client = {git = "https://github.com/ElBellaCiao/manager-service-discovery.git", rev = "2ca25fe5534068f57723fa85dec4aa6f85122e81" }
+[features]
+thread = ["core_affinity"]
+network = ["bytemuck", "retry"]
+model = ["chrono"]
+parse = ["databento", "serde", "csv"]
