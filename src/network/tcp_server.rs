@@ -3,13 +3,12 @@ use bytemuck::Pod;
 use std::io::{BufReader, ErrorKind, Read};
 use std::net::{SocketAddr, TcpListener, TcpStream};
 
-pub struct TcpServer<T: Pod> {
+pub struct TcpServer {
     pub listener: TcpListener,
     stream: BufReader<TcpStream>,
-    buffer: T,
 }
 
-impl<T: Pod> TcpServer<T> {
+impl TcpServer {
     pub fn new(socket_addr: impl Into<SocketAddr>) -> Result<Self> {
         let listener = TcpListener::bind(socket_addr.into())?;
         let (stream, _addr) = listener.accept()?;
@@ -20,15 +19,15 @@ impl<T: Pod> TcpServer<T> {
         Ok(Self {
             listener,
             stream: BufReader::new(stream),
-            buffer: T::zeroed(),
         })
     }
 
     #[inline(always)]
-    pub fn recv(&mut self) -> Result<Option<T>> {
-        let bytes = bytemuck::bytes_of_mut(&mut self.buffer);
+    pub fn recv<T: Pod>(&mut self) -> Result<Option<T>> {
+        let mut buffer = T::zeroed();
+        let bytes = bytemuck::bytes_of_mut(&mut buffer);
         match self.stream.read_exact(bytes) {
-            Ok(()) => Ok(Some(self.buffer)),
+            Ok(()) => Ok(Some(buffer)),
             Err(e) => match e.kind() {
                 // Connection closed successfully
                 ErrorKind::UnexpectedEof => Ok(None),
