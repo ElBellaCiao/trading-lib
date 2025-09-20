@@ -38,6 +38,7 @@ impl MonoTcpClient {
         Ok(stream)
     }
 
+    // todo: look into async if need to send to multiple
     pub fn send<T: Pod>(&mut self, data: &T) -> Result<()> {
         let bytes = bytemuck::bytes_of(data);
 
