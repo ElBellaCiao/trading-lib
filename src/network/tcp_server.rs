@@ -1,7 +1,7 @@
 use anyhow::Result;
 use bytemuck::Pod;
 use std::io::{BufReader, ErrorKind, Read};
-use std::net::{SocketAddr, TcpListener, TcpStream};
+use std::net::{Ipv4Addr, SocketAddr, TcpListener, TcpStream};
 
 pub struct TcpServer {
     pub listener: TcpListener,
@@ -9,8 +9,9 @@ pub struct TcpServer {
 }
 
 impl TcpServer {
-    pub fn new(socket_addr: impl Into<SocketAddr>) -> Result<Self> {
-        let listener = TcpListener::bind(socket_addr.into())?;
+    pub fn new(port: u16) -> Result<Self> {
+        let socket_addr = SocketAddr::from((Ipv4Addr::UNSPECIFIED, port));
+        let listener = TcpListener::bind(socket_addr)?;
         let (stream, _addr) = listener.accept()?;
 
         stream.set_nodelay(true)?;
