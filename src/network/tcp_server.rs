@@ -25,7 +25,7 @@ impl<T: Pod> TcpServer<T> {
     }
 
     #[inline(always)]
-    pub fn next_record(&mut self) -> Result<Option<T>> {
+    pub fn recv(&mut self) -> Result<Option<T>> {
         let bytes = bytemuck::bytes_of_mut(&mut self.buffer);
         match self.stream.read_exact(bytes) {
             Ok(()) => Ok(Some(self.buffer)),
