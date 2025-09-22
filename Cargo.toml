@@ -23,5 +23,5 @@ csv = { version = "1", optional = true }
 [features]
 thread = ["core_affinity"]
 network = ["bytemuck", "retry"]
-model = ["chrono"]
+model = ["chrono", "bytemuck"]
 parse = ["databento", "serde", "csv"]
