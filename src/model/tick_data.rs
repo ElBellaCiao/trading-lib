@@ -34,7 +34,7 @@ pub struct TickData {
     pub price: Price,
     pub order_id: OrderId,
     pub sequence: Sequence,
-    pub size: Volume,
+    pub volume: Volume,
     pub instrument_id: InstrumentId,
     pub side: Side,
     pub action: Action,
@@ -63,7 +63,7 @@ impl fmt::Display for TickData {
             actual_price,
             self.order_id,
             self.sequence,
-            self.size,
+            self.volume,
             self.instrument_id,
             side_char,
             action_char
