@@ -26,20 +26,20 @@ pub struct DatabentoMboCsvRow {
     pub sequence: u32,
 }
 
-pub trait FromDatabentoRow {
-    fn from_row(row: &DatabentoMboCsvRow) -> Result<Self>
+pub trait FromMboRow {
+    fn from_mbo_csv(row: &DatabentoMboCsvRow) -> Result<Self>
     where
         Self: Sized;
 }
 
-pub fn load_from_databento_csv<T: FromDatabentoRow>(filepath: impl AsRef<Path>) -> Result<Vec<T>> {
+pub fn load_from_databento_mbo_csv<T: FromMboRow>(filepath: impl AsRef<Path>) -> Result<Vec<T>> {
     let content = fs::read_to_string(filepath)?;
     let mut reader = Reader::from_reader(content.as_bytes());
     let mut messages = Vec::new();
 
     for (line_num, result) in reader.deserialize::<DatabentoMboCsvRow>().enumerate() {
         let row = result.map_err(|e| anyhow!("Failed to parse CSV line {}: {:?}", line_num, e))?;
-        let message = T::from_row(&row).map_err(|e| {
+        let message = T::from_mbo_csv(&row).map_err(|e| {
             anyhow!(
                 "Failed to convert line {} to target type: {:?}",
                 line_num,
@@ -52,9 +52,9 @@ pub fn load_from_databento_csv<T: FromDatabentoRow>(filepath: impl AsRef<Path>) 
     Ok(messages)
 }
 
-impl FromDatabentoRow for MboMsg {
-    fn from_row(row: &DatabentoMboCsvRow) -> Result<Self> {
-        Ok(MboMsg {
+impl FromMboRow for MboMsg {
+    fn from_mbo_csv(row: &DatabentoMboCsvRow) -> Result<Self> {
+        Ok(Self {
             hd: RecordHeader::new::<MboMsg>(
                 rtype::MBO,
                 row.publisher_id,
@@ -75,9 +75,9 @@ impl FromDatabentoRow for MboMsg {
     }
 }
 
-impl FromDatabentoRow for TickData {
-    fn from_row(row: &DatabentoMboCsvRow) -> Result<Self> {
-        Ok(TickData {
+impl FromMboRow for TickData {
+    fn from_mbo_csv(row: &DatabentoMboCsvRow) -> Result<Self> {
+        Ok(Self {
             timestamp: row.ts_event,
             price: row.price,
             sequence: row.sequence,
