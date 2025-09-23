@@ -1,4 +1,4 @@
-use crate::model::{BookSnapshot, PriceLevel};
+use crate::model::BookSnapshot;
 use anyhow::{Result, anyhow};
 use csv::Reader;
 use serde::Deserialize;
@@ -113,109 +113,77 @@ impl FromMbp10Row for BookSnapshot {
     fn from_mbp10_csv(row: &DatabentoMbp10CsvRow) -> Result<Self> {
         Ok(Self {
             timestamp: row.ts_event,
-            best_bid_table: [
-                PriceLevel {
-                    price: row.bid_px_0,
-                    quantity: row.bid_ct_0,
-                    volume: row.bid_sz_0,
-                },
-                PriceLevel {
-                    price: row.bid_px_1,
-                    quantity: row.bid_ct_1,
-                    volume: row.bid_sz_1,
-                },
-                PriceLevel {
-                    price: row.bid_px_2,
-                    quantity: row.bid_ct_2,
-                    volume: row.bid_sz_2,
-                },
-                PriceLevel {
-                    price: row.bid_px_3,
-                    quantity: row.bid_ct_3,
-                    volume: row.bid_sz_3,
-                },
-                PriceLevel {
-                    price: row.bid_px_4,
-                    quantity: row.bid_ct_4,
-                    volume: row.bid_sz_4,
-                },
-                PriceLevel {
-                    price: row.bid_px_5,
-                    quantity: row.bid_ct_5,
-                    volume: row.bid_sz_5,
-                },
-                PriceLevel {
-                    price: row.bid_px_6,
-                    quantity: row.bid_ct_6,
-                    volume: row.bid_sz_6,
-                },
-                PriceLevel {
-                    price: row.bid_px_7,
-                    quantity: row.bid_ct_7,
-                    volume: row.bid_sz_7,
-                },
-                PriceLevel {
-                    price: row.bid_px_8,
-                    quantity: row.bid_ct_8,
-                    volume: row.bid_sz_8,
-                },
-                PriceLevel {
-                    price: row.bid_px_9,
-                    quantity: row.bid_ct_9,
-                    volume: row.bid_sz_9,
-                },
+            best_bid_price: [
+                row.bid_px_0,
+                row.bid_px_1,
+                row.bid_px_2,
+                row.bid_px_3,
+                row.bid_px_4,
+                row.bid_px_5,
+                row.bid_px_6,
+                row.bid_px_7,
+                row.bid_px_8,
+                row.bid_px_9,
             ],
-            best_ask_table: [
-                PriceLevel {
-                    price: row.ask_px_0,
-                    quantity: row.ask_ct_0,
-                    volume: row.ask_sz_0,
-                },
-                PriceLevel {
-                    price: row.ask_px_1,
-                    quantity: row.ask_ct_1,
-                    volume: row.ask_sz_1,
-                },
-                PriceLevel {
-                    price: row.ask_px_2,
-                    quantity: row.ask_ct_2,
-                    volume: row.ask_sz_2,
-                },
-                PriceLevel {
-                    price: row.ask_px_3,
-                    quantity: row.ask_ct_3,
-                    volume: row.ask_sz_3,
-                },
-                PriceLevel {
-                    price: row.ask_px_4,
-                    quantity: row.ask_ct_4,
-                    volume: row.ask_sz_4,
-                },
-                PriceLevel {
-                    price: row.ask_px_5,
-                    quantity: row.ask_ct_5,
-                    volume: row.ask_sz_5,
-                },
-                PriceLevel {
-                    price: row.ask_px_6,
-                    quantity: row.ask_ct_6,
-                    volume: row.ask_sz_6,
-                },
-                PriceLevel {
-                    price: row.ask_px_7,
-                    quantity: row.ask_ct_7,
-                    volume: row.ask_sz_7,
-                },
-                PriceLevel {
-                    price: row.ask_px_8,
-                    quantity: row.ask_ct_8,
-                    volume: row.ask_sz_8,
-                },
-                PriceLevel {
-                    price: row.ask_px_9,
-                    quantity: row.ask_ct_9,
-                    volume: row.ask_sz_9,
-                },
+            best_bid_volume: [
+                row.bid_sz_0,
+                row.bid_sz_1,
+                row.bid_sz_2,
+                row.bid_sz_3,
+                row.bid_sz_4,
+                row.bid_sz_5,
+                row.bid_sz_6,
+                row.bid_sz_7,
+                row.bid_sz_8,
+                row.bid_sz_9,
+            ],
+            best_bid_quantity: [
+                row.bid_ct_0,
+                row.bid_ct_1,
+                row.bid_ct_2,
+                row.bid_ct_3,
+                row.bid_ct_4,
+                row.bid_ct_5,
+                row.bid_ct_6,
+                row.bid_ct_7,
+                row.bid_ct_8,
+                row.bid_ct_9,
+            ],
+            best_ask_price: [
+                row.ask_px_0,
+                row.ask_px_1,
+                row.ask_px_2,
+                row.ask_px_3,
+                row.ask_px_4,
+                row.ask_px_5,
+                row.ask_px_6,
+                row.ask_px_7,
+                row.ask_px_8,
+                row.ask_px_9,
+            ],
+            best_ask_volume: [
+                row.ask_sz_0,
+                row.ask_sz_1,
+                row.ask_sz_2,
+                row.ask_sz_3,
+                row.ask_sz_4,
+                row.ask_sz_5,
+                row.ask_sz_6,
+                row.ask_sz_7,
+                row.ask_sz_8,
+                row.ask_sz_9,
+            ],
+            best_ask_quantity: [
+                row.ask_ct_0,
+                row.ask_ct_1,
+                row.ask_ct_2,
+                row.ask_ct_3,
+                row.ask_ct_4,
+                row.ask_ct_5,
+                row.ask_ct_6,
+                row.ask_ct_7,
+                row.ask_ct_8,
+                row.ask_ct_9,
             ],
             _padding_0: [0u8; 32],
             _padding_1: [0u8; 16],

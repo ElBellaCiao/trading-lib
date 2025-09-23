@@ -81,7 +81,7 @@ impl FromMboRow for TickData {
             timestamp: row.ts_event,
             price: row.price,
             sequence: row.sequence,
-            size: row.size,
+            volume: row.size,
             instrument_id: row.instrument_id,
             action: parse_action(&row.action)?,
             side: parse_side(&row.side)?,
