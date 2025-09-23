@@ -6,7 +6,7 @@ type Quantity = u32;
 pub const BOOK_DEPTH: usize = 10;
 
 #[repr(C, align(64))]
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Pod, Zeroable)]
+#[derive(Debug, Default, Clone, Copy, PartialEq, Eq, Pod, Zeroable)]
 pub struct BookSnapshot {
     pub timestamp: Timestamp,
     pub best_bid_price: [Price; BOOK_DEPTH],
