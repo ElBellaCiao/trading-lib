@@ -1,7 +1,7 @@
 use crate::model::{Price, Timestamp, Volume};
 use bytemuck::{Pod, Zeroable};
 
-type Quantity = u32;
+pub type Quantity = u32;
 
 pub const BOOK_DEPTH: usize = 10;
 
