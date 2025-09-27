@@ -62,7 +62,7 @@ impl FromMboRow for MboMsg {
                 row.ts_event,
             ),
             order_id: row.order_id,
-            price: row.price,
+            price: row.price / 10_000_000,
             size: row.size,
             flags: FlagSet::from(row.flags),
             channel_id: row.channel_id,
@@ -79,7 +79,7 @@ impl FromMboRow for TickData {
     fn from_mbo_csv(row: &DatabentoMboCsvRow) -> Result<Self> {
         Ok(Self {
             timestamp: row.ts_event,
-            price: row.price,
+            price: row.price / 10_000_000,
             sequence: row.sequence,
             volume: row.size,
             instrument_id: row.instrument_id,
