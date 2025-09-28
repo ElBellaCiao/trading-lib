@@ -1,4 +1,4 @@
-use crate::model::BookSnapshot;
+use crate::model::{BookSnapshot, SIDE_ASK, SIDE_BID, from_databento_to_price};
 use anyhow::{Result, anyhow};
 use csv::Reader;
 use serde::Deserialize;
@@ -114,16 +114,16 @@ impl FromMbp10Row for BookSnapshot {
         Ok(Self {
             timestamp: row.ts_event,
             best_bid_price: [
-                row.bid_px_00,
-                row.bid_px_01,
-                row.bid_px_02,
-                row.bid_px_03,
-                row.bid_px_04,
-                row.bid_px_05,
-                row.bid_px_06,
-                row.bid_px_07,
-                row.bid_px_08,
-                row.bid_px_09,
+                from_databento_to_price(SIDE_BID, &row.bid_px_00),
+                from_databento_to_price(SIDE_BID, &row.bid_px_01),
+                from_databento_to_price(SIDE_BID, &row.bid_px_02),
+                from_databento_to_price(SIDE_BID, &row.bid_px_03),
+                from_databento_to_price(SIDE_BID, &row.bid_px_04),
+                from_databento_to_price(SIDE_BID, &row.bid_px_05),
+                from_databento_to_price(SIDE_BID, &row.bid_px_06),
+                from_databento_to_price(SIDE_BID, &row.bid_px_07),
+                from_databento_to_price(SIDE_BID, &row.bid_px_08),
+                from_databento_to_price(SIDE_BID, &row.bid_px_09),
             ],
             best_bid_volume: [
                 row.bid_sz_00,
@@ -150,16 +150,16 @@ impl FromMbp10Row for BookSnapshot {
                 row.bid_ct_09,
             ],
             best_ask_price: [
-                row.ask_px_00,
-                row.ask_px_01,
-                row.ask_px_02,
-                row.ask_px_03,
-                row.ask_px_04,
-                row.ask_px_05,
-                row.ask_px_06,
-                row.ask_px_07,
-                row.ask_px_08,
-                row.ask_px_09,
+                from_databento_to_price(SIDE_ASK, &row.ask_px_00),
+                from_databento_to_price(SIDE_ASK, &row.ask_px_01),
+                from_databento_to_price(SIDE_ASK, &row.ask_px_02),
+                from_databento_to_price(SIDE_ASK, &row.ask_px_03),
+                from_databento_to_price(SIDE_ASK, &row.ask_px_04),
+                from_databento_to_price(SIDE_ASK, &row.ask_px_05),
+                from_databento_to_price(SIDE_ASK, &row.ask_px_06),
+                from_databento_to_price(SIDE_ASK, &row.ask_px_07),
+                from_databento_to_price(SIDE_ASK, &row.ask_px_08),
+                from_databento_to_price(SIDE_ASK, &row.ask_px_09),
             ],
             best_ask_volume: [
                 row.ask_sz_00,
