@@ -28,7 +28,7 @@ pub const ACTION_FILL: Action = b'F';
 
 // Order matters for Pod
 #[repr(C, align(64))]
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Pod, Zeroable)]
+#[derive(Default, Debug, Clone, Copy, PartialEq, Eq, Pod, Zeroable)]
 pub struct TickData {
     pub timestamp: Timestamp,
     pub price: Price,
