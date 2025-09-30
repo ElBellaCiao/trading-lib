@@ -1,7 +1,7 @@
 use crate::model::{Price, SIDE_ASK, SIDE_BID, Side};
 
-pub const INTERNAL_BID_SENTINEL: Price = Price::MAX;
-pub const INTERNAL_ASK_SENTINEL: Price = 0;
+pub const INTERNAL_BID_SENTINEL: Price = 0;
+pub const INTERNAL_ASK_SENTINEL: Price = Price::MAX;
 
 pub const DATABENTO_SENTINEL: i64 = i64::MAX;
 pub const DATABENTO_PRICE_DIVISOR: Price = 10_000_000;
