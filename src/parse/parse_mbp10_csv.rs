@@ -84,7 +84,7 @@ pub struct DatabentoMbp10CsvRow {
 }
 
 pub trait FromMbp10Row {
-    fn from_mbp10_csv(row: &DatabentoMbp10CsvRow) -> Result<Self>
+    fn from_mbp10_csv(row: &DatabentoMbp10CsvRow) -> Option<Self>
     where
         Self: Sized;
 }
@@ -96,22 +96,21 @@ pub fn load_from_databento_mbp_csv<T: FromMbp10Row>(filepath: impl AsRef<Path>) 
 
     for (line_num, result) in reader.deserialize::<DatabentoMbp10CsvRow>().enumerate() {
         let row = result.map_err(|e| anyhow!("Failed to parse CSV line {}: {:?}", line_num, e))?;
-        let message = T::from_mbp10_csv(&row).map_err(|e| {
-            anyhow!(
-                "Failed to convert line {} to target type: {:?}",
-                line_num,
-                e
-            )
-        })?;
-        messages.push(message);
+        if let Some(message) = T::from_mbp10_csv(&row) {
+            messages.push(message);
+        }
     }
 
     Ok(messages)
 }
 
 impl FromMbp10Row for BookSnapshot {
-    fn from_mbp10_csv(row: &DatabentoMbp10CsvRow) -> Result<Self> {
-        Ok(Self {
+    fn from_mbp10_csv(row: &DatabentoMbp10CsvRow) -> Option<Self> {
+        if row.action != "A" || row.action != "C" {
+            return None;
+        }
+
+        let book_snaphost = Self {
             timestamp: row.ts_event,
             best_bid_price: [
                 from_databento_to_price(SIDE_BID, &row.bid_px_00),
@@ -188,6 +187,8 @@ impl FromMbp10Row for BookSnapshot {
             _padding_0: [0u8; 32],
             _padding_1: [0u8; 16],
             _padding_2: [0u8; 8],
-        })
+        };
+
+        Some(book_snaphost)
     }
 }
