@@ -27,7 +27,7 @@ pub struct DatabentoMboCsvRow {
 }
 
 pub trait FromMboRow {
-    fn from_mbo_csv(row: &DatabentoMboCsvRow) -> Result<Self>
+    fn from_mbo_csv(row: &DatabentoMboCsvRow) -> Result<Option<Self>>
     where
         Self: Sized;
 }
@@ -39,22 +39,21 @@ pub fn load_from_databento_mbo_csv<T: FromMboRow>(filepath: impl AsRef<Path>) ->
 
     for (line_num, result) in reader.deserialize::<DatabentoMboCsvRow>().enumerate() {
         let row = result.map_err(|e| anyhow!("Failed to parse CSV line {}: {:?}", line_num, e))?;
-        let message = T::from_mbo_csv(&row).map_err(|e| {
-            anyhow!(
-                "Failed to convert line {} to target type: {:?}",
-                line_num,
-                e
-            )
-        })?;
-        messages.push(message);
+        if let Some(message) = T::from_mbo_csv(&row)? {
+            messages.push(message);
+        }
     }
 
     Ok(messages)
 }
 
 impl FromMboRow for MboMsg {
-    fn from_mbo_csv(row: &DatabentoMboCsvRow) -> Result<Self> {
-        Ok(Self {
+    fn from_mbo_csv(row: &DatabentoMboCsvRow) -> Result<Option<Self>> {
+        if row.action != "A" || row.action != "C" {
+            return Ok(None);
+        }
+
+        let mbo_message = Self {
             hd: RecordHeader::new::<MboMsg>(
                 rtype::MBO,
                 row.publisher_id,
@@ -71,13 +70,19 @@ impl FromMboRow for MboMsg {
             ts_recv: row.ts_recv,
             ts_in_delta: row.ts_in_delta,
             sequence: row.sequence,
-        })
+        };
+
+        Ok(Some(mbo_message))
     }
 }
 
 impl FromMboRow for TickData {
-    fn from_mbo_csv(row: &DatabentoMboCsvRow) -> Result<Self> {
-        Ok(Self {
+    fn from_mbo_csv(row: &DatabentoMboCsvRow) -> Result<Option<Self>> {
+        if row.action != "A" || row.action != "C" {
+            return Ok(None);
+        }
+
+        let tick_data = Self {
             timestamp: row.ts_event,
             price: row.price / 10_000_000,
             sequence: row.sequence,
@@ -87,6 +92,8 @@ impl FromMboRow for TickData {
             side: parse_side(&row.side)?,
             order_id: row.order_id,
             _padding: [0; 26],
-        })
+        };
+
+        Ok(Some(tick_data))
     }
 }
