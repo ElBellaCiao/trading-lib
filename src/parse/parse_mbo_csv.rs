@@ -49,7 +49,7 @@ pub fn load_from_databento_mbo_csv<T: FromMboRow>(filepath: impl AsRef<Path>) ->
 
 impl FromMboRow for MboMsg {
     fn from_mbo_csv(row: &DatabentoMboCsvRow) -> Result<Option<Self>> {
-        if row.action != "A" || row.action != "C" {
+        if row.action != "A" && row.action != "C" {
             return Ok(None);
         }
 
