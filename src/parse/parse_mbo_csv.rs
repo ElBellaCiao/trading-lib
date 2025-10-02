@@ -78,7 +78,7 @@ impl FromMboRow for MboMsg {
 
 impl FromMboRow for TickData {
     fn from_mbo_csv(row: &DatabentoMboCsvRow) -> Result<Option<Self>> {
-        if row.action != "A" || row.action != "C" {
+        if row.action != "A" && row.action != "C" {
             return Ok(None);
         }
 
