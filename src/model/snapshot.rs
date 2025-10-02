@@ -19,3 +19,14 @@ pub struct BookSnapshot {
     pub _padding_1: [u8; 16],
     pub _padding_2: [u8; 8],
 }
+
+impl BookSnapshot {
+    pub fn same_book_state(&self, other: &Self) -> bool {
+        self.best_bid_price == other.best_bid_price
+            && self.best_bid_volume == other.best_bid_volume
+            && self.best_bid_quantity == other.best_bid_quantity
+            && self.best_ask_price == other.best_ask_price
+            && self.best_ask_volume == other.best_ask_volume
+            && self.best_ask_quantity == other.best_ask_quantity
+    }
+}
