@@ -106,7 +106,7 @@ pub fn load_from_databento_mbp_csv<T: FromMbp10Row>(filepath: impl AsRef<Path>) 
 
 impl FromMbp10Row for BookSnapshot {
     fn from_mbp10_csv(row: &DatabentoMbp10CsvRow) -> Option<Self> {
-        if row.action != "A" && row.action != "C" && row.action != "T" {
+        if row.action != "A" && row.action != "C" {
             return None;
         }
 
